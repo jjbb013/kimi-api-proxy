@@ -2,33 +2,71 @@
 
 Kimi API 中转代理，基于 Vercel Edge Function 构建。只需提供 Kimi API Key，一键部署，即可通过你自己的域名调用 Kimi API。
 
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fjjbb013%2Fkimi-api-proxy&env=KIMI_API_KEY&project-name=kimi-api-proxy&repository-name=kimi-api-proxy)
+
 ## 特性
 
 - ⚡ **Vercel Edge Function** — 全球边缘节点加速
 - 🔑 **自动注入 API Key** — 未携带 Authorization 时自动使用环境变量中的 Key
 - 🌐 **完整 CORS 支持** — 开箱即用，支持浏览器端直接调用
-- 🚀 **一键部署脚本** — 无需手动配置 Vercel Dashboard
+- 🚀 **一键部署** — 点击上方按钮或运行脚本，无需手动配置 Vercel Dashboard
 - 📡 **流式 SSE 支持** — 完整支持 Kimi 流式响应
 
 ## 前置条件
 
 | 条件 | 获取方式 |
 |------|---------|
-| Node.js 18+ | https://nodejs.org |
-| Git | https://git-scm.com |
 | Vercel 账号 | https://vercel.com/signup（可用 GitHub 账号直接登录） |
 | Kimi API Key | https://platform.moonshot.cn |
 
-## 快速开始
+> 方式一（推荐）只需 Vercel 账号和 API Key；方式二额外需要 Node.js + Git。
+
+---
+
+## 部署方式一：点击 Deploy Button（推荐 ⭐）
+
+无需本地安装任何工具，点击上方 **「Deploy with Vercel」** 按钮：
+
+1. 跳转 Vercel 页面，选择你的 GitHub 账号
+2. 填写 **Project Name**（项目名称）
+3. 在 **Environment Variables** 区域填写：
+   - `KIMI_API_KEY` = 你的 Kimi API Key
+4. 点击 **Deploy**
+
+等待约 30 秒，即可获得你的专属代理地址。
+
+### 验证部署
+
+```bash
+# 健康检查
+curl https://<你的域名>/health
+
+# 获取模型列表
+curl https://<你的域名>/v1/models \
+  -H "Authorization: Bearer your_kimi_api_key"
+```
+
+---
+
+## 部署方式二：本地脚本部署
+
+适合需要二次开发或偏好命令行的用户。
+
+### 额外前置条件
+
+| 条件 | 获取方式 |
+|------|---------|
+| Node.js 18+ | https://nodejs.org |
+| Git | https://git-scm.com |
 
 ### 1. 克隆仓库
 
 ```bash
-git clone https://github.com/你的用户名/kimi-api-proxy.git
+git clone https://github.com/jjbb013/kimi-api-proxy.git
 cd kimi-api-proxy
 ```
 
-### 2. 添加执行权限并运行部署脚本
+### 2. 运行部署脚本
 
 ```bash
 chmod +x deploy.sh
@@ -44,14 +82,9 @@ chmod +x deploy.sh
 
 ### 3. 验证部署
 
-```bash
-# 健康检查
-curl https://<你的域名>/health
+同上。
 
-# 获取模型列表
-curl https://<你的域名>/v1/models \
-  -H "Authorization: Bearer your_kimi_api_key"
-```
+---
 
 ## 客户端配置
 
