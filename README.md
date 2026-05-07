@@ -1,0 +1,142 @@
+# Kimi API Proxy
+
+Kimi API 中转代理，基于 Vercel Edge Function 构建。只需提供 Kimi API Key，一键部署，即可通过你自己的域名调用 Kimi API。
+
+## 特性
+
+- ⚡ **Vercel Edge Function** — 全球边缘节点加速
+- 🔑 **自动注入 API Key** — 未携带 Authorization 时自动使用环境变量中的 Key
+- 🌐 **完整 CORS 支持** — 开箱即用，支持浏览器端直接调用
+- 🚀 **一键部署脚本** — 无需手动配置 Vercel Dashboard
+- 📡 **流式 SSE 支持** — 完整支持 Kimi 流式响应
+
+## 前置条件
+
+| 条件 | 获取方式 |
+|------|---------|
+| Node.js 18+ | https://nodejs.org |
+| Git | https://git-scm.com |
+| Vercel 账号 | https://vercel.com/signup（可用 GitHub 账号直接登录） |
+| Kimi API Key | https://platform.moonshot.cn |
+
+## 快速开始
+
+### 1. 克隆仓库
+
+```bash
+git clone https://github.com/你的用户名/kimi-api-proxy.git
+cd kimi-api-proxy
+```
+
+### 2. 添加执行权限并运行部署脚本
+
+```bash
+chmod +x deploy.sh
+./deploy.sh
+```
+
+脚本会自动完成以下操作：
+- 检查并安装 Vercel CLI
+- 引导 Vercel 登录（如未登录）
+- 交互式输入 Kimi API Key
+- 推送代码到 GitHub
+- 部署到 Vercel 并设置环境变量
+
+### 3. 验证部署
+
+```bash
+# 健康检查
+curl https://<你的域名>/health
+
+# 获取模型列表
+curl https://<你的域名>/v1/models \
+  -H "Authorization: Bearer your_kimi_api_key"
+```
+
+## 客户端配置
+
+### Kimi Code / Kimi CLI
+
+```bash
+export KIMI_BASE_URL=https://<你的域名>
+export KIMI_API_KEY=your_kimi_api_key
+```
+
+### OpenAI SDK
+
+```python
+from openai import OpenAI
+
+client = OpenAI(
+    api_key="your_kimi_api_key",
+    base_url="https://<你的域名>/v1"
+)
+
+response = client.chat.completions.create(
+    model="moonshot-v1-8k",
+    messages=[{"role": "user", "content": "你好"}]
+)
+print(response.choices[0].message.content)
+```
+
+### cURL
+
+```bash
+curl https://<你的域名>/v1/chat/completions \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer your_kimi_api_key" \
+  -d '{
+    "model": "moonshot-v1-8k",
+    "messages": [{"role": "user", "content": "你好"}]
+  }'
+```
+
+## 项目结构
+
+```
+kimi-api-proxy/
+├── api/
+│   ├── v1/
+│   │   └── [[...path]].ts    # 主代理路由，透传所有 /v1/* 请求
+│   └── health.ts             # 健康检查
+├── vercel.json               # Vercel 路由与响应头配置
+├── package.json              # 依赖与脚本
+├── tsconfig.json             # TypeScript 配置
+├── .env.example              # 环境变量模板
+├── deploy.sh                 # 一键部署脚本
+└── README.md                 # 本文档
+```
+
+## 环境变量
+
+| 变量名 | 必填 | 说明 |
+|--------|------|------|
+| `KIMI_API_KEY` | 是 | Kimi API Key，用于自动注入 Authorization |
+
+## 手动部署
+
+如果你不想使用 `deploy.sh`，也可以手动操作：
+
+```bash
+# 安装依赖
+npm install
+
+# 登录 Vercel
+npx vercel login
+
+# 设置环境变量
+npx vercel env add KIMI_API_KEY
+
+# 部署
+npx vercel --prod
+```
+
+## 注意事项
+
+- 免费版 Vercel 有 [使用限制](https://vercel.com/docs/concepts/limits/overview)，高并发场景请升级套餐
+- API Key 通过 Vercel 环境变量安全存储，不会暴露在代码中
+- 建议配合 GitHub Actions 实现 push 自动部署（见 `.github/workflows/deploy.yml`）
+
+## License
+
+MIT

@@ -1,0 +1,19 @@
+{
+  "rewrites": [
+    {
+      "source": "/health",
+      "destination": "/api/health"
+    }
+  ],
+  "headers": [
+    {
+      "source": "/(.*)",
+      "headers": [
+        {
+          "key": "X-Proxy-Service",
+          "value": "kimi-api-proxy"
+        }
+      ]
+    }
+  ]
+}
